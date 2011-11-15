@@ -146,13 +146,11 @@
                 handle.hover(function(){
                     handle.css('cursor', 'move');
                 }, function(){ 
-                    handle.css('cursor', 'auto'); 
+                    handle.css('cursor', 'auto');
                 });
             }
             
             make_draggable(mbox_title, mbox_wrap);
-
-            
 
             // Loading image
             loading_image = $('<div class="mbox_loading" />').append(
@@ -231,13 +229,11 @@
                             var content = data;
                             
                             if (optional_settings['response_type'] == RESPONSE_JSON) {
-                                var json = $.parseJSON(data);
+                                //json = JSON.parse(data);
+                                var json = data;
                                 if (json.status == 'SUCCESS') {
                                     close = true;
                                     content = json.content;
-                                } else if (json.status == 'ERROR') {
-                                    content = json.content;
-                                    $('#mbox_wrap').removeClass("mbox_error").addClass("mbox_error");
                                 }
                             } else {
                                 if (data == 'OK') {
@@ -250,12 +246,12 @@
                                     optional_settings["callback_ajax_posted_success"]($.mbox.element, content);
                                 $.mbox.close();
                             } else {
-                                container.html(content);
+                                container.html(data);
                                 $.mbox.reposition_box();
                             }
                         }
                     },
-                    'error': function(jqXHR, textStatus, errorThrown) {
+                    'error': function() {
                         mbox_footer.find('input').removeAttr("disabled");
                         $('#mbox_wrap').removeClass("mbox_error").addClass("mbox_error");
                         container.html(_("Woops! Something went wrong. Please try again later."));
@@ -274,7 +270,7 @@
             'url': url,
             'dataType': 'html',
             'success': function(data){
-                var close = false;
+                close = false;
                 if (optional_settings != undefined && optional_settings["callback_ajax_before_loaded"] != undefined)
                     close = optional_settings["callback_ajax_before_loaded"]($.mbox.element, data);
                 
@@ -392,13 +388,15 @@
 
                 mbox_overlay.show();
                 mbox_overlay.css('opacity', overlay_opacity);
+                
                 mbox_wrap.show();
 
                 // show box
                 scroll();
 
                 // Fadein
-                mbox_wrap.children().fadeIn(10);
+                //mbox_wrap.children().fadeIn(10);
+                mbox_wrap.children().show();
             });
         },
 
@@ -413,7 +411,7 @@
             });
         },
 
-        'close': function(settings) {
+        'close': function(settings, callback) {
             if (prevent_closing)
                 return false;
 
@@ -424,26 +422,39 @@
             mbox_wrap.find('.mbox_loading').remove();
 
             // Fadeout
-            mbox_wrap.fadeOut(10, function() {
-                mbox_overlay.fadeOut('fast', function() {
-                    // Empty content/title/footer containers
-                    mbox_content.empty();
-                    mbox_title.empty();
-                    mbox_footer.empty();
-
-                    mbox_wrap.attr('style', '').hide();
-                    mbox_table.attr('style', '');
+            
+            
+            
+            if (true)
+            {
+                mbox_wrap.fadeOut('fast', function() {
+                    var new_mbox = false;
+                    if ($.isFunction(callback))
+                    {
+                        new_mbox = callback($.mbox.element);
+                    }
+                    if (!new_mbox)
+                    {
+                        mbox_overlay.fadeOut('fast', function() {
+                            // Empty content/title/footer containers
+                            mbox_content.empty();
+                            mbox_title.empty();
+                            mbox_footer.empty();
+        
+                            mbox_wrap.attr('style', '').hide();
+                            mbox_table.attr('style', '');
+                        });
+                    }
                 });
-            });
-
-            // Show flash objects again
-            if (isIE)
-                $('embed, object, select').css('visibility', 'visible');
-
-            // Close callback
-            if (typeof(settings) != 'undefined' && $.isFunction(settings.callback_closed))
-                settings.callback_closed($.mbox.element);
-
+    
+                // Show flash objects again
+                if (isIE)
+                    $('embed, object, select').css('visibility', 'visible');
+    
+                // Close callback
+                if (typeof(settings) != 'undefined' && $.isFunction(settings.callback_closed))
+                    settings.callback_closed($.mbox.element);
+            }
             return false;
         },
 
@@ -565,7 +576,7 @@
         });
         return this;
     };
-
+     
     // Create footer and connect handlers
     function create_footer(settings) {
         var type = settings.type;
@@ -586,9 +597,7 @@
                 }
                 if (do_close)
                 {
-                    $.mbox.close(settings);
-                    if ($.isFunction(closed_handler))
-                        closed_handler($.mbox.element);
+                    $.mbox.close(settings, closed_handler);
                 }
             });
         }
