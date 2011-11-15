@@ -217,7 +217,7 @@
                     'type': 'POST',
                     'data': container.find('form').serialize(),
                     'success': function(data) {
-                        close = false;
+                        var close = false;
                         if (optional_settings["callback_ajax_submit_success"] != undefined)
                             close = optional_settings["callback_ajax_submit_success"]($.mbox.element, data);
                         
@@ -234,6 +234,9 @@
                                 if (json.status == 'SUCCESS') {
                                     close = true;
                                     content = json.content;
+                                } else if (json.status == 'ERROR') {
+                                    content = json.content;
+                                    $('#mbox_wrap').removeClass("mbox_error").addClass("mbox_error");
                                 }
                             } else {
                                 if (data == 'OK') {
@@ -395,8 +398,7 @@
                 scroll();
 
                 // Fadein
-                //mbox_wrap.children().fadeIn(10);
-                mbox_wrap.children().show();
+                mbox_wrap.children().fadeIn(10);
             });
         },
 
