@@ -273,7 +273,7 @@
             'url': url,
             'dataType': 'html',
             'success': function(data){
-                close = false;
+                var close = false;
                 if (optional_settings != undefined && optional_settings["callback_ajax_before_loaded"] != undefined)
                     close = optional_settings["callback_ajax_before_loaded"]($.mbox.element, data);
                 
