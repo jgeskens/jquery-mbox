@@ -422,39 +422,34 @@
             mbox_wrap.find('.mbox_loading').remove();
 
             // Fadeout
-            
-            
-            
-            if (true)
-            {
-                mbox_wrap.fadeOut('fast', function() {
-                    var new_mbox = false;
-                    if ($.isFunction(callback))
-                    {
-                        new_mbox = callback($.mbox.element);
-                    }
-                    if (!new_mbox)
-                    {
-                        mbox_overlay.fadeOut('fast', function() {
-                            // Empty content/title/footer containers
-                            mbox_content.empty();
-                            mbox_title.empty();
-                            mbox_footer.empty();
-        
-                            mbox_wrap.attr('style', '').hide();
-                            mbox_table.attr('style', '');
-                        });
-                    }
-                });
+            mbox_wrap.fadeOut('fast', function() {
+                var new_mbox = false;
+                if ($.isFunction(callback))
+                {
+                    new_mbox = callback($.mbox.element);
+                }
+                if (!new_mbox)
+                {
+                    mbox_overlay.fadeOut('fast', function() {
+                        // Empty content/title/footer containers
+                        mbox_content.empty();
+                        mbox_title.empty();
+                        mbox_footer.empty();
     
-                // Show flash objects again
-                if (isIE)
-                    $('embed, object, select').css('visibility', 'visible');
-    
-                // Close callback
-                if (typeof(settings) != 'undefined' && $.isFunction(settings.callback_closed))
-                    settings.callback_closed($.mbox.element);
-            }
+                        mbox_wrap.attr('style', '').hide();
+                        mbox_table.attr('style', '');
+                    });
+                }
+            });
+
+            // Show flash objects again
+            if (isIE)
+                $('embed, object, select').css('visibility', 'visible');
+
+            // Close callback
+            if (typeof(settings) != 'undefined' && $.isFunction(settings.callback_closed))
+                settings.callback_closed($.mbox.element);
+            
             return false;
         },
 
